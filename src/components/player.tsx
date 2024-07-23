@@ -3,17 +3,24 @@ import { MessageCircle } from "lucide-react";
 import { Header } from "../components/header";
 import { VideoPlayer } from "../components/video-player";
 import { Module } from "../components/module";
-import { useAppSelector } from "../store";
-import { useCurrentLesson } from "../store/slices/player";
+import { useAppDispatch, useAppSelector } from "../store";
+import { fetchCourse, useCurrentLesson } from "../store/slices/player";
 import { useEffect } from "react";
 
 export function Player() {
-  const modules = useAppSelector((store) => store.player.course.modules)
+  const modules = useAppSelector((store) => store.player.course?.modules)
+  const dispatch = useAppDispatch()
 
   const { currentLesson } = useCurrentLesson()
 
   useEffect(() => {
-    document.title = currentLesson.title
+    dispatch(fetchCourse())
+  }, [])
+
+  useEffect(() => {
+    if (currentLesson) {
+      document.title = currentLesson.title
+    }
   }, [currentLesson])
 
   return (
@@ -33,7 +40,7 @@ export function Player() {
             <VideoPlayer />
           </div>
           <aside className="w-80 absolute top-0 bottom-0 right-0 border-l divide-y-2 divide-zinc-900 border-zinc-800 bg-zinc-900 overflow-y-scroll scrollbar scrollbar-thin scrollbar-track-zinc-950 scrollbar-thumb-zinc-800">
-            {modules.map((module, index) => (
+            {modules && modules.map((module, index) => (
               <Module key={module.id} moduleIndex={index} title={module.title} amountOfLessons={module.lessons.length} />
             ))}
           </aside>
