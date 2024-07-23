@@ -23,12 +23,14 @@ export interface PlayerState {
   course: Course | null;
   currentModuleIndex: number;
   currentLessonIndex: number;
+  loading: boolean
 }
 
 const initialState: PlayerState = {
   course: null,
   currentModuleIndex: 0,
   currentLessonIndex: 0,
+  loading: true
 }
 
 export const fetchCourse = createAsyncThunk(
@@ -66,8 +68,13 @@ export const playerSlice = createSlice({
     }
   },
   extraReducers(builder) {
+    builder.addCase(fetchCourse.pending, (state) => {
+      state.loading = true
+    })
+
     builder.addCase(fetchCourse.fulfilled, (state, action) => {
       state.course = action.payload
+      state.loading = false
     })
   },
 })
